@@ -14,6 +14,6 @@ export function config() {
   const site = process.env.SITE_URL?.trim() || '';
   let siteValid = false;
   try { siteValid = new URL(site).protocol === 'https:' || new URL(site).hostname === 'localhost'; } catch {}
-  const ready = Boolean(title && statement.length >= 30 && revision && controller && address && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) && !isNaN(date.getTime()) && date.getTime() > Date.now() && process.env.DATABASE_URL && siteValid && process.env.RESEND_API_KEY && process.env.VERIFICATION_FROM_EMAIL && process.env.CRON_SECRET && process.env.CRON_SECRET.length >= 32 && process.env.ADMIN_CLERK_USER_ID && process.env.CLERK_SECRET_KEY && process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && (!dob || dobPurpose));
+  const ready = Boolean(title && statement.length >= 30 && revision && controller && address && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) && !isNaN(date.getTime()) && date.getTime() > Date.now() && process.env.DATABASE_URL && siteValid && process.env.RESEND_API_KEY && process.env.VERIFICATION_FROM_EMAIL && process.env.CRON_SECRET && process.env.CRON_SECRET.length >= 32 && process.env.ADMIN_URL?.startsWith('https://') && (!dob || dobPurpose));
   return { title, statement, revision, controller, address, email, retention, dob, dobPurpose, site, ready };
 }

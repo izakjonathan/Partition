@@ -1,1 +1,6 @@
-{"crons":[{"path":"/api/cleanup","schedule":"0 5 * * *"}]}
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "outputDirectory": null,
+  "crons": [{ "path": "/api/cleanup", "schedule": "0 5 * * *" }]
+}

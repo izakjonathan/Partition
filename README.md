@@ -1,33 +1,23 @@
-# Private petition starter
+# Independent petition on Vercel
 
-A public Next.js petition page with email confirmation and a private dashboard at `/admin`. This is an independent petition, **not an official Danish borgerforslag**. Email verification shows control of an inbox, not legal identity or voting eligibility.
+The public Next.js petition collects expressions of support after an email confirmation. It is **not** an official Danish borgerforslag or a verified voter signature. The private dashboard lives in a separate Vercel project at `admin-portal/` with its own email and password login. Both projects can use only `*.vercel.app` addresses.
 
-## GitHub → Vercel setup
+## Deployment
 
-1. Create a private GitHub repository and upload the **contents of this directory** to its root (`package.json` at root). Do not commit `.env.local`.
-2. Import it into Vercel. Add a Neon Postgres database through the Vercel Marketplace, preferably in an EU region. Run `db/schema.sql` once in Neon's SQL editor. Use the pooled `DATABASE_URL`.
-3. Create a Clerk application, add its keys to Vercel and create your own admin account. Turn off public account creation in Clerk. Set `ADMIN_CLERK_USER_ID` to your exact Clerk user ID. Other Clerk users cannot access the data.
-4. Add Resend through Vercel Marketplace or create a Resend account. Verify a sending domain and configure `RESEND_API_KEY` and `VERIFICATION_FROM_EMAIL`. Use a domain you control. Configure SPF and DKIM as Resend instructs.
-5. Add all variables from `.env.example` in Vercel. `PETITION_STATEMENT` is the **complete final text**, not a placeholder. Set `PETITION_REVISION` to `1`; increment it whenever you change the statement. Set `SITE_URL` to your actual production origin with `https://` and no trailing slash. Set the controller's legal name, address, privacy email, and a justified retention date. Set `CRON_SECRET` with `openssl rand -hex 32`. Do not put secrets in `NEXT_PUBLIC_` variables.
-6. Deploy. Verify `/`, `/privacy`, a test submission and its confirmation email, `/confirm`, the `/admin` count, CSV export and deletion. Delete the test record. Inspect the daily `/api/cleanup` job in the Vercel dashboard. Share `/` only after these checks.
+1. Commit the contents of this package to the `Partition` repository root. Vercel project `partition` builds the root Next.js app. Do not commit `.env.local` or database credentials.
+2. Connect the already created empty Vercel project `partition-private-admin` to this same repository, with Root Directory `admin-portal`, Framework Preset Next.js, and no Output Directory override.
+3. The admin project's production `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` are already configured. Deploy and verify the sign-in page and unauthorized CSV response before connecting the Neon database `partition-signatures`, prefix `DATABASE` for `DATABASE_URL`. If Vercel Authentication → All Deployments is available later, enable it too. The Vercel settings currently say additional permissions are required to change it, including on an already deployed project.
+4. Set `ADMIN_URL` on the public project to the second project's HTTPS origin. `/admin` then redirects there. The public Vercel project already has `DATABASE_URL` and `SITE_URL`; verify its environment variables after committing this update.
+5. Configure the remaining settings in `.env.example`. Replace the placeholder `PETITION_STATEMENT` with the exact final text. Advance `PETITION_REVISION` whenever it changes. Supply the controller's legal name, postal address, privacy email, and a justified `RETENTION_DATE`. Keep `COLLECT_DOB=false` unless an exact birth date is necessary and the purpose documented. Set a random 32+ byte `CRON_SECRET`.
+6. Configure an email provider that can send confirmation messages to the public, with `RESEND_API_KEY` and a verified `VERIFICATION_FROM_EMAIL`. Resend generally requires verifying a domain you control; the Vercel site URL alone is insufficient to send public confirmation emails. If you have no domain, select an email provider that supports a verified individual sender and adapt `app/actions.ts` before opening the form.
+7. Test the public form, confirmation flow, private dashboard and CSV download, then remove test data. Review the daily `/api/cleanup` invocation. Share the public URL only after the legal notice and delivery setup are complete.
 
-The form remains closed until the statement (at least 30 characters), revision, legal controller details, privacy contact, database, email provider and site URL are configured. A pending response expires after 24 hours. The daily Vercel cron deletes expired pending responses and all responses after `RETENTION_DATE` (UTC). Check the cron and use the admin cleanup button if it fails. Review backup retention separately.
+The form stays closed until every required item is configured. Pending responses expire after 24 hours. The cron deletes expired pending entries and responses after `RETENTION_DATE`. The private dashboard is read-only; handle verified access or deletion requests in Neon and remove any exported copies. Review database backup retention separately.
 
-## What is counted
+## Privacy review
 
-Supporters see the exact statement, tick an explicit support box and a separate privacy consent box, then receive a single-use email link. They must click **Confirm support** on a page displaying the statement again. The dashboard shows confirmed entries only and stores the exact statement and revision each person confirmed, along with the notice version and times. One response per email. The admin can delete by email or row and export confirmed records as CSV (up to 10,000 rows). A deleted person can submit again.
-
-Email verification does not prevent someone from using aliases or submitting a false name or postcode. Do not call the count verified identities. There is no MitID integration and these entries do not count as official borgerforslag supporters.
-
-## Privacy and security review before launch
-
-- Check that the petition text and act of supporting it do not reveal sensitive data such as political opinions, health, religion or trade-union membership. If they do, obtain a tailored GDPR assessment, including Article 9, **before** using this form. The supplied privacy notice is a starting template, not an automatic guarantee of compliance.
-- Verify the actual controller, purpose, retention, legal basis, processor agreements, subprocessors and international transfers for Vercel, Neon, Clerk and Resend. Make the notice accurate for your setup.
-- Date of birth is off by default. Collect an exact date only with a documented necessity and a specific `DOB_PURPOSE`; never ask for CPR numbers for this independent petition.
-- Requests for access, erasure and withdrawal go to `PRIVACY_EMAIL`. Verify the requester, locate and remove their record; exported CSV copies need the same deletion controls. Keep production data out of unprotected preview deployments.
-- Public forms attract spam; use Vercel Firewall/rate limiting for production. The form includes a hidden honeypot and refuses repeated submissions for the same email, but these do not prevent determined abuse.
-- Confirmation links contain a short-lived secret in the URL. Avoid external trackers, link shorteners and logging URL query strings on `/confirm`.
+Support for a petition can reveal political opinion or another special-category attribute. Obtain a tailored GDPR assessment before collecting such support. The privacy page is a starting template, not a guarantee of compliance. Verify the controller, purpose, legal basis, retention, provider agreements, subprocessors, international transfers and accurate wording before launch. Do not request CPR numbers. Email confirmation shows control of an inbox, not a person's legal identity.
 
 ## Local development
 
-Node.js 20.9+, Neon, Clerk development keys and Resend test setup are needed. `npm install`, copy `.env.example` to `.env.local`, configure it, run `npm run dev`. Build with `npm run build` and check types with `npm run typecheck`.
+Node.js 22. Install packages with `npm ci`, copy `.env.example` to `.env.local`, and run `npm run dev`. Run `npm run build` before committing. The separate admin project has its own README.
