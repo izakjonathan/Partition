@@ -10,6 +10,6 @@ export default function Home() {
     <section className="card second"><h2>Add your support</h2>
       <p>Confirm your email to be counted. Email confirmation does not verify your legal identity.</p>
       {c.ready ? <InterestForm dob={c.dob} dobPurpose={c.dobPurpose} /> : <p className="notice">Registration is not open yet.</p>}
-    </section><footer><a href="/privacy">Privacy information</a></footer>
+    </section><footer><a href="/privacy">Privacy information</a><span aria-hidden="true"> · </span><a href="/admin/sign-in">Manager login</a></footer>
   </main>;
 }

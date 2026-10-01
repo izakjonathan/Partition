@@ -5,6 +5,17 @@ import { cookies } from 'next/headers';
 export const cookieName = '__Host-petition_admin';
 const duration = 8 * 60 * 60;
 
+export function requestOrigin(request: Request) {
+  const supplied = request.headers.get('origin');
+  const host = request.headers.get('host');
+  if (!supplied || !host) return null;
+  try {
+    const url = new URL(supplied);
+    if (url.host !== host || (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname)))) return null;
+    return url.origin;
+  } catch { return null; }
+}
+
 function settings() {
   const password = process.env.ADMIN_PASSWORD || '';
   const secret = process.env.ADMIN_SESSION_SECRET || '';
