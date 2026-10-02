@@ -13,7 +13,7 @@ export function InterestForm({ dob, dobPurpose }: { dob: boolean; dobPurpose: st
     <label>Fulde navn <input name="name" autoComplete="name" maxLength={120} required /></label>
     <label>E-mail <input name="email" type="email" autoComplete="email" maxLength={254} required /></label>
     <label>Postnummer <input name="postcode" inputMode="numeric" autoComplete="postal-code" pattern="[0-9]{4}" maxLength={4} required /></label>
-    <label>Alder (valgfrit) <input name="ageYears" type="text" inputMode="numeric" autoComplete="off" pattern="[0-9]{1,3}" maxLength={3} placeholder="Din alder i år" /></label>
+    <label>Alder (valgfrit) <input name="ageYears" type="text" inputMode="numeric" autoComplete="off" pattern="[0-9]{1,3}" maxLength={3} placeholder="35" /></label>
     {dob && <label>Fødselsdato <span className="hint">{dobPurpose}</span><input name="dob" type="date" max={new Date().toISOString().slice(0, 10)} required /></label>}
     <div className="trap" aria-hidden="true"><label>Website <input name="website" tabIndex={-1} autoComplete="off" /></label></div>
     <label className="check"><input type="checkbox" name="support" value="yes" required /> <span>Jeg støtter forslaget, som det står ovenfor.</span></label>

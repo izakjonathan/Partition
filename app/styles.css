@@ -57,3 +57,9 @@ input::placeholder,textarea::placeholder{color:var(--ink);opacity:1}
 .signup-panel .form input[type=checkbox]{accent-color:#000}
 .signup-panel .form button{border-color:#000;background:var(--canvas)!important;color:#000!important}
 .signup-panel .check a{color:#000}
+
+/* iOS Safari zooms the page when a focused form control has text below 16px. */
+@media(max-width:1024px){
+  input:not([type=checkbox]):not([type=radio]):not([type=hidden]),textarea,select{font-size:16px!important}
+}
+.signup-panel input[name=ageYears]::placeholder{color:color-mix(in srgb,#000 45%,var(--canvas));opacity:1}
