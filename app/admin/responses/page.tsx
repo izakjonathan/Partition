@@ -11,7 +11,7 @@ export default async function Responses() {
   if (!process.env.DATABASE_URL) return <main className="manager-shell"><ManagerHeader section="responses"/><div className="manager-main"><h1>Responses</h1><p>Database connection is missing.</p></div></main>;
   const sql = db();
   const [rows, optinRows] = await Promise.all([
-    sql`SELECT id::text, full_name, email, postal_code, date_of_birth::text, age_band, created_at::text, verified_at::text,
+    sql`SELECT id::text, full_name, email, postal_code, date_of_birth::text, age_band, age_years, created_at::text, verified_at::text,
       privacy_version, statement_revision, statement_snapshot, marketing_consent_at::text, marketing_withdrawn_at::text
       FROM interests WHERE verified_at IS NOT NULL ORDER BY verified_at DESC`,
     sql`SELECT email FROM interests WHERE verified_at IS NOT NULL AND marketing_consent_at IS NOT NULL

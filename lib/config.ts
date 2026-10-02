@@ -1,7 +1,7 @@
 import { mailReady } from './confirmation-email';
 import { petitionSettings } from './settings';
 
-export const privacyVersion = '2026-10-02-agentmail';
+export const privacyVersion = '2026-10-02-exact-age';
 
 export async function config() {
   const settings = await petitionSettings();

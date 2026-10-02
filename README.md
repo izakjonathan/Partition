@@ -4,7 +4,7 @@ One Next.js app on the existing Vercel `partition` project. The public page is `
 
 ## Update the GitHub repository
 
-Extract this ZIP and commit its contents at the repository root, with `package.json` at the root. Replace the previous app files, including removal of the old `admin-portal` folder and Clerk routes. The project uses the existing Neon `DATABASE_URL`; the new `petition_settings`, age range, and email opt-in columns are created on its first database request. The Danish wording is a **draft** in `/admin/settings`, not public until you publish it. Replace `YYYYY` with the correct band name before the Publish button accepts the statement. Each publication increases the version, and response records preserve the exact version they confirmed.
+Extract this ZIP and commit its contents at the repository root, with `package.json` at the root. Replace the previous app files, including removal of the old `admin-portal` folder and Clerk routes. The project uses the existing Neon `DATABASE_URL`; the new `petition_settings`, exact-age, and email opt-in columns are created on its first database request. Earlier age-range responses remain readable. The Danish wording is a **draft** in `/admin/settings`, not public until you publish it. Replace `YYYYY` with the correct band name before the Publish button accepts the statement. Each publication increases the version, and response records preserve the exact version they confirmed.
 
 The manager email starts at `izakhyllested@icloud.com`. Settings can change it after confirming the current password. The change signs out current sessions; sign in with the new email and the same `ADMIN_PASSWORD`. An email typo could lock you out, so enter the address twice and check it carefully. This is an application login, not a change to the Vercel account.
 
@@ -12,7 +12,7 @@ The Baros-inspired manager has a dashboard with confirmed totals, postcode-to-ci
 
 ## Required setup before collecting responses
 
-The organiser is shown as Blågårds Apotek. The privacy contact defaults to the manager email, initially `izakhyllested@icloud.com`. Records, including optional blues-email consent, expire six months after submission. The form asks for an optional age range; no birth dates are collected by default.
+The organiser is shown as Blågårds Apotek. The privacy contact defaults to the manager email, initially `izakhyllested@icloud.com`. Records, including optional blues-email consent, expire six months after submission. The form asks for an optional exact age in years (1–120) as a text input; no birth dates are collected by default. The dashboard groups exact ages into ranges; exports include both exact ages and any legacy range responses.
 
 ### Create a sender without an owned domain
 

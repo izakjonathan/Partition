@@ -47,3 +47,13 @@ input::placeholder,textarea::placeholder{color:var(--ink);opacity:1}
   .public-footer{flex-direction:row;align-items:center;justify-content:space-between;gap:.4rem;font-size:.62rem;white-space:nowrap}
   .public-footer nav{gap:.55rem;flex:none}
 }
+
+/* Submit panel uses the UI Studio canvas with black content */
+.signup-panel{background:var(--canvas);color:#000;border:1px solid #000}
+.signup-panel>div>p{color:#000;opacity:1}
+.signup-panel .accent-dot{color:#000}
+.signup-form-wrap{border-color:#000}
+.signup-panel .form input:not([type=checkbox]),.signup-panel .form select{background:var(--canvas);color:#000;border-color:#000}
+.signup-panel .form input[type=checkbox]{accent-color:#000}
+.signup-panel .form button{border-color:#000;background:var(--canvas)!important;color:#000!important}
+.signup-panel .check a{color:#000}

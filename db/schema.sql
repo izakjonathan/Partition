@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS interests (
   postal_code char(4) NOT NULL,
   date_of_birth date,
   age_band text,
+  age_years smallint,
   confirmation_message_id text,
   created_at timestamptz NOT NULL DEFAULT now(),
   privacy_version text NOT NULL,

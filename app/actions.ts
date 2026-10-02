@@ -5,7 +5,6 @@ import { config, privacyVersion } from '@/lib/config';
 import { db } from '@/lib/db';
 import { deleteConfirmationMessage, sendConfirmation } from '@/lib/confirmation-email';
 import { bluesEmailConsent } from '@/lib/consent';
-import { ageBands } from '@/lib/age-bands';
 
 export type FormState = { status: 'idle' | 'success' | 'error'; message: string };
 
@@ -17,7 +16,7 @@ export async function registerInterest(_previous: FormState, form: FormData): Pr
   const name = String(form.get('name') || '').trim().replace(/\s+/g, ' ');
   const email = String(form.get('email') || '').trim().toLowerCase();
   const postcode = String(form.get('postcode') || '').trim();
-  const ageBand = String(form.get('ageBand') || '');
+  const ageText = String(form.get('ageYears') || '').trim();
   const dob = c.dob ? String(form.get('dob') || '') : '';
   if (name.length < 2 || name.length > 120 || /[<>\x00-\x1f]/.test(name))
     return { status: 'error', message: 'Enter your full name (2–120 characters).' };
@@ -25,8 +24,8 @@ export async function registerInterest(_previous: FormState, form: FormData): Pr
     return { status: 'error', message: 'Enter a valid email address.' };
   if (!/^\d{4}$/.test(postcode))
     return { status: 'error', message: 'Enter a four digit Danish postcode.' };
-  if (ageBand && !ageBands.some(band => band.value === ageBand))
-    return { status: 'error', message: 'Choose a valid age range.' };
+  if (ageText && (!/^\d{1,3}$/.test(ageText) || Number(ageText) < 1 || Number(ageText) > 120))
+    return { status: 'error', message: 'Skriv din alder som et tal mellem 1 og 120.' };
   if (c.dob && (!/^\d{4}-\d{2}-\d{2}$/.test(dob) || isNaN(Date.parse(dob)) || new Date(dob).toISOString().slice(0, 10) !== dob || dob > new Date().toISOString().slice(0, 10)))
     return { status: 'error', message: 'Enter a valid date of birth.' };
   if (form.get('acknowledgement') !== 'yes')
@@ -45,8 +44,8 @@ export async function registerInterest(_previous: FormState, form: FormData): Pr
     }
     const token = randomBytes(32).toString('hex');
     const digest = createHash('sha256').update(token).digest('hex');
-    const rows = await sql`INSERT INTO interests (id, full_name, email, postal_code, date_of_birth, age_band, privacy_version, statement_snapshot, statement_revision, verification_token_hash, verification_expires_at, marketing_requested, marketing_consent_text)
-      VALUES (${id}, ${name}, ${email}, ${postcode}, ${dob || null}, ${ageBand || null}, ${privacyVersion}, ${c.statement}, ${c.revision}, ${digest}, now() + interval '24 hours', ${updates}, ${updates ? bluesEmailConsent : null})
+    const rows = await sql`INSERT INTO interests (id, full_name, email, postal_code, date_of_birth, age_years, privacy_version, statement_snapshot, statement_revision, verification_token_hash, verification_expires_at, marketing_requested, marketing_consent_text)
+      VALUES (${id}, ${name}, ${email}, ${postcode}, ${dob || null}, ${ageText ? Number(ageText) : null}, ${privacyVersion}, ${c.statement}, ${c.revision}, ${digest}, now() + interval '24 hours', ${updates}, ${updates ? bluesEmailConsent : null})
       ON CONFLICT (email) DO NOTHING RETURNING id`;
     if (!rows.length) return generic;
     const confirmUrl = `${c.site.replace(/\/$/, '')}/confirm?token=${token}`;
