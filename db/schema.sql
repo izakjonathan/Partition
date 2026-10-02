@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS interests (
   email text NOT NULL,
   postal_code char(4) NOT NULL,
   date_of_birth date,
+  age_band text,
   created_at timestamptz NOT NULL DEFAULT now(),
   privacy_version text NOT NULL,
   statement_snapshot text NOT NULL,
@@ -31,5 +32,8 @@ CREATE TABLE IF NOT EXISTS petition_settings (
   revision integer NOT NULL DEFAULT 0,
   draft text NOT NULL,
   manager_email text NOT NULL,
+  canvas_color text NOT NULL DEFAULT '#fff4c4',
+  ink_color text NOT NULL DEFAULT '#000000',
+  accent_color text NOT NULL DEFAULT '#dfee4b',
   updated_at timestamptz NOT NULL DEFAULT now()
 );

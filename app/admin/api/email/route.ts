@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   const confirmEmail = String(data.get('confirmEmail') || '').trim().toLowerCase();
   const email = String(data.get('email') || '').trim().toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || email !== confirmEmail || email.length > 254 || !(await checkCredentials(current, password)))
-    return Response.redirect(new URL('/admin?notice=email-error', origin), 303);
+    return Response.redirect(new URL('/admin/settings?notice=email-error', origin), 303);
   await db()`UPDATE petition_settings SET manager_email = ${email}, updated_at = now() WHERE id = 1`;
   return new Response(null, { status: 303, headers: {
     Location: new URL('/admin/sign-in', origin).toString(),

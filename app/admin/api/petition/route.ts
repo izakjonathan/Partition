@@ -11,9 +11,9 @@ export async function POST(request: Request) {
   const draft = String(data.get('statement') || '').trim();
   const publish = data.get('intent') === 'publish';
   if (draft.length < 30 || draft.length > 10000)
-    return Response.redirect(new URL('/admin?notice=invalid', origin), 303);
+    return Response.redirect(new URL('/admin/settings?notice=invalid', origin), 303);
   if (publish && /\bYYYYY\b/.test(draft))
-    return Response.redirect(new URL('/admin?notice=placeholder', origin), 303);
+    return Response.redirect(new URL('/admin/settings?notice=placeholder', origin), 303);
   await petitionSettings();
   const sql = db();
   if (publish) {
@@ -22,5 +22,5 @@ export async function POST(request: Request) {
   } else {
     await sql`UPDATE petition_settings SET draft = ${draft}, updated_at = now() WHERE id = 1`;
   }
-  return Response.redirect(new URL(`/admin?notice=${publish ? 'published' : 'saved'}`, origin), 303);
+  return Response.redirect(new URL(`/admin/settings?notice=${publish ? 'published' : 'saved'}`, origin), 303);
 }

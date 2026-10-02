@@ -14,7 +14,7 @@ export async function GET() {
   if (!site || !process.env.DATABASE_URL) return new Response('Configuration missing', { status: 503 });
   const rows = await db()`SELECT id::text, email, full_name, marketing_consent_at::text, marketing_consent_text
     FROM interests WHERE verified_at IS NOT NULL AND marketing_consent_at IS NOT NULL AND marketing_withdrawn_at IS NULL AND created_at >= now() - interval '6 months'
-    ORDER BY marketing_consent_at DESC LIMIT 10000`;
+    ORDER BY marketing_consent_at DESC`;
   const columns = ['email', 'full_name', 'marketing_consent_at', 'marketing_consent_text', 'unsubscribe_url'];
   const csv = [columns.map(field).join(','), ...rows.map(row => [row.email, row.full_name, row.marketing_consent_at, row.marketing_consent_text,
     `${site}/unsubscribe?id=${row.id}&token=${unsubscribeToken(String(row.id))}`].map(field).join(','))].join('\r\n');
