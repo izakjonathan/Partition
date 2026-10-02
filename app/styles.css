@@ -37,3 +37,13 @@ input::placeholder,textarea::placeholder{color:var(--ink);opacity:1}
 .sort-buttons button,.sort-buttons button:not(.secondary):not(.outline-button):not(.close-circle):not(.pager button){flex:1;min-width:0;padding:.34rem .25rem;border:1px solid var(--ink);border-radius:99px;background:var(--canvas);color:var(--ink);font-size:.66rem;font-weight:800;letter-spacing:0;white-space:nowrap}
 .sort-buttons button[aria-pressed=true],.sort-buttons button[aria-pressed=true]:not(.secondary):not(.outline-button):not(.close-circle):not(.pager button){background:var(--ink);color:var(--canvas)}
 @media(max-width:600px){.manager-main{padding-top:1.15rem}.metric-card{min-height:6.5rem;padding:.9rem}.metric-card strong{font-size:2.25rem}.insight-card{padding:1rem}.card-heading{gap:.5rem}.card-heading>span{font-size:.56rem;white-space:normal;text-align:center}.list-actions .pill-button{font-size:.63rem}.responses-toolbar{align-items:center;flex-direction:row}.responses-toolbar h2{font-size:1.12rem}.responses-toolbar .pill-button{font-size:.66rem}}
+
+/* Public page after removing decorative labels */
+.petition-hero .eyebrow{margin:0 0 1rem}
+.petition-panel{grid-template-columns:1fr;gap:0}
+.signup-panel h2{margin-top:0}
+@media(max-width:600px){
+  .petition-hero .eyebrow{margin:0 0 .7rem}
+  .public-footer{flex-direction:row;align-items:center;justify-content:space-between;gap:.4rem;font-size:.62rem;white-space:nowrap}
+  .public-footer nav{gap:.55rem;flex:none}
+}

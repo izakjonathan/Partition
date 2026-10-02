@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS interests (
   postal_code char(4) NOT NULL,
   date_of_birth date,
   age_band text,
-  firebase_account_pending boolean NOT NULL DEFAULT false,
+  confirmation_message_id text,
   created_at timestamptz NOT NULL DEFAULT now(),
   privacy_version text NOT NULL,
   statement_snapshot text NOT NULL,
