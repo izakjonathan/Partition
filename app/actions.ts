@@ -3,12 +3,13 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { config, privacyVersion } from '@/lib/config';
 import { db } from '@/lib/db';
-import { Resend } from 'resend';
+import { sendConfirmation } from '@/lib/mail';
+import { bluesEmailConsent } from '@/lib/consent';
 
 export type FormState = { status: 'idle' | 'success' | 'error'; message: string };
 
 export async function registerInterest(_previous: FormState, form: FormData): Promise<FormState> {
-  const c = config();
+  const c = await config();
   if (!c.ready) return { status: 'error', message: 'Signing is not available yet.' };
   const generic = { status: 'success', message: 'If this email can be used, a confirmation link will arrive shortly. Open it to count your support.' } as const;
   if (form.get('website')) return generic;
@@ -28,6 +29,7 @@ export async function registerInterest(_previous: FormState, form: FormData): Pr
     return { status: 'error', message: 'Please confirm that you have read the privacy information.' };
   if (form.get('support') !== 'yes')
     return { status: 'error', message: 'Please confirm that you support the petition statement.' };
+  const updates = form.get('updates') === 'yes';
   const id = randomUUID();
   try {
     const sql = db();
@@ -35,18 +37,15 @@ export async function registerInterest(_previous: FormState, form: FormData): Pr
     await sql`DELETE FROM interests WHERE email = ${email} AND verified_at IS NULL AND verification_expires_at < now()`;
     const token = randomBytes(32).toString('hex');
     const digest = createHash('sha256').update(token).digest('hex');
-    const rows = await sql`INSERT INTO interests (id, full_name, email, postal_code, date_of_birth, privacy_version, statement_snapshot, statement_revision, verification_token_hash, verification_expires_at)
-      VALUES (${id}, ${name}, ${email}, ${postcode}, ${dob || null}, ${privacyVersion}, ${c.statement}, ${c.revision}, ${digest}, now() + interval '24 hours')
+    const rows = await sql`INSERT INTO interests (id, full_name, email, postal_code, date_of_birth, privacy_version, statement_snapshot, statement_revision, verification_token_hash, verification_expires_at, marketing_requested, marketing_consent_text)
+      VALUES (${id}, ${name}, ${email}, ${postcode}, ${dob || null}, ${privacyVersion}, ${c.statement}, ${c.revision}, ${digest}, now() + interval '24 hours', ${updates}, ${updates ? bluesEmailConsent : null})
       ON CONFLICT (email) DO NOTHING RETURNING id`;
     if (!rows.length) return generic;
-    const resend = new Resend(process.env.RESEND_API_KEY);
     const confirmUrl = `${c.site.replace(/\/$/, '')}/confirm?token=${token}`;
-    const { error } = await resend.emails.send({
-      from: process.env.VERIFICATION_FROM_EMAIL!, to: email,
-      subject: `Confirm your support: ${c.title}`,
-      text: `To confirm your support for “${c.title}” (version ${c.revision}), open this link and select Confirm support:\n\n${confirmUrl}\n\nThis link expires in 24 hours. If you did not submit this request, ignore this message.`,
-    }, { idempotencyKey: `petition-${id}` });
-    if (error) {
+    try {
+      await sendConfirmation(email, `Bekræft din støtte: ${c.title}`,
+        `Bekræft din støtte til “${c.title}” (version ${c.revision}) her:\n\n${confirmUrl}\n\n${updates ? 'Du valgte også at modtage e-mails fra Blågårds Apotek om kommende bluesarrangementer. Dette begynder først, når du bekræfter din støtte.\n\n' : ''}Linket udløber efter 24 timer. Hvis du ikke har bedt om det, kan du ignorere denne e-mail.`);
+    } catch {
       await sql`DELETE FROM interests WHERE id = ${id} AND verified_at IS NULL`;
       return { status: 'error', message: 'Confirmation email could not be sent. Please try again later.' };
     }

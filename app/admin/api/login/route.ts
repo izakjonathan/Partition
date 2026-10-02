@@ -7,10 +7,10 @@ export async function POST(request: Request) {
   const form = await request.formData();
   const email = form.get('email');
   const password = form.get('password');
-  if (typeof email !== 'string' || typeof password !== 'string' || !checkCredentials(email, password)) {
+  if (typeof email !== 'string' || typeof password !== 'string' || !(await checkCredentials(email, password))) {
     return Response.redirect(new URL('/admin/sign-in?error=1', origin), 303);
   }
-  const data = session();
+  const data = await session();
   if (!data) return new Response('Login unavailable', { status: 503 });
   return new Response(null, { status: 303, headers: {
     Location: new URL('/admin', origin).toString(),

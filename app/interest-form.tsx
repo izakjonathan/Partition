@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react';
 import { registerInterest, type FormState } from './actions';
+import { bluesEmailConsent } from '@/lib/consent';
 
 const initial: FormState = { status: 'idle', message: '' };
 
@@ -15,6 +16,7 @@ export function InterestForm({ dob, dobPurpose }: { dob: boolean; dobPurpose: st
     {dob && <label>Date of birth <span className="hint">{dobPurpose}</span><input name="dob" type="date" max={new Date().toISOString().slice(0, 10)} required /></label>}
     <div className="trap" aria-hidden="true"><label>Website <input name="website" tabIndex={-1} autoComplete="off" /></label></div>
     <label className="check"><input type="checkbox" name="support" value="yes" required /> <span>I support the petition statement shown above.</span></label>
+    <label className="check"><input type="checkbox" name="updates" value="yes" /> <span>{bluesEmailConsent}</span></label>
     <label className="check"><input type="checkbox" name="acknowledgement" value="yes" required /> <span>I consent to the organiser using my details to record and verify my support for this petition. I have read the <a href="/privacy" target="_blank" rel="noopener noreferrer">privacy information</a>.</span></label>
     {state.status === 'error' && <p className="error" role="alert">{state.message}</p>}
     <button disabled={pending}>{pending ? 'Submitting…' : 'Send confirmation email'}</button>

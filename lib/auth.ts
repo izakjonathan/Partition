@@ -1,6 +1,7 @@
 import 'server-only';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
+import { petitionSettings } from './settings';
 
 export const cookieName = '__Host-petition_admin';
 const duration = 8 * 60 * 60;
@@ -16,11 +17,12 @@ export function requestOrigin(request: Request) {
   } catch { return null; }
 }
 
-function settings() {
+async function settings() {
   const password = process.env.ADMIN_PASSWORD || '';
   const secret = process.env.ADMIN_SESSION_SECRET || '';
   if (password.length < 32 || secret.length < 32) return null;
-  return { password, secret, email: 'izakhyllested@icloud.com' };
+  const stored = await petitionSettings();
+  return { password, secret, email: stored?.manager_email || 'izakhyllested@icloud.com' };
 }
 
 function mac(value: string, secret: string) {
@@ -33,18 +35,18 @@ function equal(a: string, b: string) {
   return first.length === second.length && timingSafeEqual(first, second);
 }
 
-export function configured() { return !!settings(); }
+export async function configured() { return !!(await settings()); }
 
-export function checkCredentials(email: string, password: string) {
-  const s = settings();
+export async function checkCredentials(email: string, password: string) {
+  const s = await settings();
   if (!s || password.length > 512 || email.length > 256) return false;
   const supplied = mac(password, s.secret);
   const expected = mac(s.password, s.secret);
   return equal(email.trim().toLowerCase(), s.email) && equal(supplied, expected);
 }
 
-export function session() {
-  const s = settings();
+export async function session() {
+  const s = await settings();
   if (!s) return null;
   const expires = Math.floor(Date.now() / 1000) + duration;
   const value = `${expires}.${mac(`${expires}:${s.email}`, s.secret)}`;
@@ -52,7 +54,7 @@ export function session() {
 }
 
 export async function authorized() {
-  const s = settings();
+  const s = await settings();
   if (!s) return false;
   const value = (await cookies()).get(cookieName)?.value || '';
   const match = /^(\d{10})\.([a-f0-9]{64})$/.exec(value);

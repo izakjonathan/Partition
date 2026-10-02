@@ -1,0 +1,1 @@
+export const bluesEmailConsent = 'Ja tak, Blågårds Apotek må sende mig e-mails om kommende blueskoncerter og lignende bluesarrangementer på Blågårds Apotek. Jeg kan til enhver tid afmelde mig. Dette valg er frivilligt og påvirker ikke min støtte.';
