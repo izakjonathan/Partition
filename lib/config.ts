@@ -25,5 +25,5 @@ export async function config() {
     cleanup: Boolean(process.env.CRON_SECRET && process.env.CRON_SECRET.length >= 32),
     managerLogin: Boolean(process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD.length >= 32 && process.env.ADMIN_SESSION_SECRET && process.env.ADMIN_SESSION_SECRET.length >= 32),
   };
-  return { title, statement, revision, controller, email, retention, dob, dobPurpose, site, ready: ready && checks.statement, checks };
+  return { title, statement, revision, controller, email, retention, dob, dobPurpose, site, confirmationSubject: settings?.confirmation_subject || '', confirmationBody: settings?.confirmation_body || '', ready: ready && checks.statement, checks };
 }

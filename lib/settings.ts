@@ -15,7 +15,15 @@ Det vil give mulighed for løbende at booke forskellige bluesartister og samtidi
 
 Jeg bakker op om initiativet om at skabe flere blueskoncerter på Blågårds Apotek og støtter forslaget om et fast, månedligt blues-arrangement i de nævnte sæsoner`;
 
-export type PetitionSettings = { title: string; statement: string; revision: number; draft: string; manager_email: string; canvas_color: string; ink_color: string; accent_color: string };
+export const defaultConfirmationSubject = 'Bekræft din støtte til flere blueskoncerter';
+export const defaultConfirmationBody = `Du har bedt om at støtte forslaget om flere blueskoncerter på Blågårds Apotek.
+
+Bekræft din e-mail og læs forslaget igen her:
+{{confirmation_link}}
+
+Linket udløber om 24 timer. Hvis du ikke har udfyldt formularen, kan du ignorere denne e-mail.`;
+
+export type PetitionSettings = { title: string; statement: string; revision: number; draft: string; manager_email: string; canvas_color: string; ink_color: string; accent_color: string; confirmation_subject: string; confirmation_body: string };
 
 let installation: Promise<void> | undefined;
 async function install() {
@@ -32,11 +40,16 @@ async function install() {
       canvas_color text NOT NULL DEFAULT '#fff4c4',
       ink_color text NOT NULL DEFAULT '#000000',
       accent_color text NOT NULL DEFAULT '#dfee4b',
+      confirmation_subject text NOT NULL DEFAULT 'Bekræft din støtte til flere blueskoncerter',
+      confirmation_body text NOT NULL DEFAULT '',
       updated_at timestamptz NOT NULL DEFAULT now()
     )`;
     await sql`ALTER TABLE petition_settings ADD COLUMN IF NOT EXISTS canvas_color text NOT NULL DEFAULT '#fff4c4'`;
     await sql`ALTER TABLE petition_settings ADD COLUMN IF NOT EXISTS ink_color text NOT NULL DEFAULT '#000000'`;
     await sql`ALTER TABLE petition_settings ADD COLUMN IF NOT EXISTS accent_color text NOT NULL DEFAULT '#dfee4b'`;
+    await sql`ALTER TABLE petition_settings ADD COLUMN IF NOT EXISTS confirmation_subject text NOT NULL DEFAULT 'Bekræft din støtte til flere blueskoncerter'`;
+    await sql`ALTER TABLE petition_settings ADD COLUMN IF NOT EXISTS confirmation_body text NOT NULL DEFAULT ''`;
+    await sql`UPDATE petition_settings SET confirmation_body = ${defaultConfirmationBody} WHERE confirmation_body = ''`;
     await sql`ALTER TABLE interests ADD COLUMN IF NOT EXISTS marketing_requested boolean NOT NULL DEFAULT false`;
     await sql`ALTER TABLE interests ADD COLUMN IF NOT EXISTS marketing_consent_at timestamptz`;
     await sql`ALTER TABLE interests ADD COLUMN IF NOT EXISTS marketing_consent_text text`;
@@ -54,6 +67,6 @@ async function install() {
 export async function petitionSettings(): Promise<PetitionSettings | null> {
   if (!process.env.DATABASE_URL) return null;
   await install();
-  const rows = await db()`SELECT title, statement, revision, draft, manager_email, canvas_color, ink_color, accent_color FROM petition_settings WHERE id = 1`;
+  const rows = await db()`SELECT title, statement, revision, draft, manager_email, canvas_color, ink_color, accent_color, confirmation_subject, confirmation_body FROM petition_settings WHERE id = 1`;
   return rows[0] as PetitionSettings | undefined || null;
 }

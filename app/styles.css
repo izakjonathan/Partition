@@ -63,3 +63,6 @@ input::placeholder,textarea::placeholder{color:var(--ink);opacity:1}
   input:not([type=checkbox]):not([type=radio]):not([type=hidden]),textarea,select{font-size:16px!important}
 }
 .signup-panel input[name=ageYears]::placeholder{color:color-mix(in srgb,#000 45%,var(--canvas));opacity:1}
+.response-table .delete-response{padding:.38rem .6rem;border:1px solid #a62828;border-radius:99px;background:transparent;color:#a62828;font-size:.72rem;font-weight:800}
+.response-table .delete-response:hover{background:#a62828;color:#fff}
+.responses-section>.error-banner{margin:.5rem 1rem}

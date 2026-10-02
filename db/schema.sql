@@ -37,5 +37,7 @@ CREATE TABLE IF NOT EXISTS petition_settings (
   canvas_color text NOT NULL DEFAULT '#fff4c4',
   ink_color text NOT NULL DEFAULT '#000000',
   accent_color text NOT NULL DEFAULT '#dfee4b',
+  confirmation_subject text NOT NULL DEFAULT 'Bekræft din støtte til flere blueskoncerter',
+  confirmation_body text NOT NULL DEFAULT '',
   updated_at timestamptz NOT NULL DEFAULT now()
 );
