@@ -27,7 +27,7 @@ function age(date: string | null) {
   return result;
 }
 
-export function ResponsesTable({ rows, cities, optinEmails, total }: { rows: ResponseRow[]; cities: Record<string,string>; optinEmails: string[]; total: number }) {
+export function ResponsesTable({ rows, cities, optinEmails }: { rows: ResponseRow[]; cities: Record<string,string>; optinEmails: string[] }) {
   const [filters, setFilters] = useState<Partial<Record<Key,string>>>({});
   const [sort, setSort] = useState<{ key: Key; direction: 'asc' | 'desc' }>({ key: 'verified_at', direction: 'desc' });
   const [page, setPage] = useState(1);
@@ -50,12 +50,11 @@ export function ResponsesTable({ rows, cities, optinEmails, total }: { rows: Res
     try { await navigator.clipboard.writeText(optinEmails.join('; ')); setCopied(true); window.setTimeout(() => setCopied(false),3000); }
     catch { setCopied(false); }
   }
-  return <section className="responses-section"><div className="responses-toolbar"><div><h2>All responses</h2><p>{filtered.length.toLocaleString('da-DK')} shown after filters{total > rows.length ? ` · first ${rows.length.toLocaleString('da-DK')} loaded` : ''}</p></div>
-    <button className="pill-button" type="button" onClick={copyEmails} disabled={!optinEmails.length}>{copied ? 'Copied ✓' : `Copy opt-in emails (${optinEmails.length})`}</button></div>
-    <p className="table-help">Only confirmed, active opt-ins are copied. Paste into a mailing service with individual unsubscribe links; the CSV provides those links.</p>
-    <div className="table-wrap"><table className="response-table"><thead><tr>{columns.map(({key,label,placeholder}) => <th key={key} scope="col"><span>{label}</span><div className="column-tools"><input type="search" aria-label={`Filter ${label}`} placeholder={placeholder} value={filters[key] || ''} onChange={e => {setFilters({...filters,[key]:e.target.value});setPage(1);}}/><select aria-label={`Sort ${label}`} value={sort.key === key ? sort.direction : ''} onChange={e => {if(e.target.value) {setSort({key,direction:e.target.value as 'asc'|'desc'});setPage(1);}}}><option value="">Sort</option><option value="asc">A–Z / oldest</option><option value="desc">Z–A / newest</option></select></div></th>)}</tr></thead>
+  return <section className="responses-section"><div className="responses-toolbar"><h2>All responses <span className="response-count">{filtered.length.toLocaleString('da-DK')}</span></h2>
+    <button className="pill-button" type="button" onClick={copyEmails} disabled={!optinEmails.length}>{copied ? 'Copied ✓' : `Copy opt-ins (${optinEmails.length})`}</button></div>
+    <div className="table-wrap"><table className="response-table"><thead><tr>{columns.map(({key,label,placeholder}) => <th key={key} scope="col"><span>{label}</span><details className="column-filter"><summary aria-label={`Filter and sort ${label}`}>Filter {(filters[key] || sort.key === key) && <i aria-hidden="true">•</i>} <span aria-hidden="true">⌄</span></summary><div className="filter-fields"><input type="search" aria-label={`Filter ${label}`} placeholder={placeholder} value={filters[key] || ''} onChange={e => {setFilters({...filters,[key]:e.target.value});setPage(1);}}/><div className="sort-buttons"><button type="button" aria-label={`Sort ${label} up`} aria-pressed={sort.key === key && sort.direction === 'asc'} onClick={() => {setSort({key,direction:'asc'});setPage(1);}}>↑ Up</button><button type="button" aria-label={`Sort ${label} down`} aria-pressed={sort.key === key && sort.direction === 'desc'} onClick={() => {setSort({key,direction:'desc'});setPage(1);}}>↓ Down</button></div></div></details></th>)}</tr></thead>
       <tbody>{visible.map(row => <tr key={row.id}><td>{row.verified_at.slice(0,10)}</td><td><strong>{row.full_name}</strong></td><td>{row.email}</td><td>{cities[row.postal_code] || 'Unknown'}<small>{row.postal_code}</small></td><td>{row.age_band ? ageBands.find(band => band.value === row.age_band)?.label || row.age_band : row.date_of_birth ? <>{age(row.date_of_birth)} years<small>{row.date_of_birth}</small></> : 'Not provided'}</td><td>{row.marketing_consent_at && !row.marketing_withdrawn_at ? 'Yes' : 'No'}</td><td><details><summary>Version {row.statement_revision}</summary><div className="statement">{row.statement_snapshot}</div></details></td><td>{row.privacy_version}</td></tr>)}</tbody></table></div>
-    {!visible.length && <div className="empty-note">No responses match these filters.</div>}
+    {!visible.length && <div className="empty-note">{rows.length ? 'No responses match these filters.' : 'No responses yet.'}</div>}
     {pages > 1 && <nav className="pager" aria-label="Responses pagination"><button type="button" disabled={page <= 1} onClick={() => setPage(page-1)}>← Previous</button><span>Page {page} of {pages}</span><button type="button" disabled={page >= pages} onClick={() => setPage(page+1)}>Next →</button></nav>}
   </section>;
 }

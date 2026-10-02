@@ -1,6 +1,5 @@
 import { db } from '@/lib/db';
 import { authorized } from '@/lib/auth';
-import { config } from '@/lib/config';
 import { cityForPostcode } from '@/lib/postal-city';
 import { redirect } from 'next/navigation';
 import { ManagerHeader } from './manager-header';
@@ -12,7 +11,6 @@ type AgeRow = { age: number | null; age_band: string | null; count: number };
 
 export default async function Dashboard() {
   if (!(await authorized())) redirect('/admin/sign-in');
-  const c = await config();
   if (!process.env.DATABASE_URL) return <main className="manager-shell"><ManagerHeader section="dashboard"/><section className="manager-main"><h1>Dashboard</h1><p>Database connection is missing.</p></section></main>;
   const sql = db();
   const [summaryRows, postalRows, ageRows] = await Promise.all([
@@ -31,29 +29,20 @@ export default async function Dashboard() {
   const bands = ageBands.map(band => ({ name: band.label, count: ages.reduce((sum, row) => sum + (row.age_band === band.value || (!row.age_band && row.age !== null && row.age >= band.min && row.age <= band.max) ? Number(row.count) : 0), 0) }));
   const maxCity = Math.max(1, ...cities.map(row => Number(row.count)));
   const maxAge = Math.max(1, ...bands.map(row => row.count));
-  const checks = [
-    ['Published statement', c.checks.statement], ['Database', c.checks.database],
-    ['Public URL', c.checks.siteUrl], ['Confirmation email', c.checks.emailDelivery],
-    ['Six-month cleanup', c.checks.cleanup], ['Manager login', c.checks.managerLogin],
-  ] as const;
-  const missing = checks.filter(([, ok]) => !ok);
   return <main className="manager-shell"><ManagerHeader section="dashboard"/><div className="manager-main">
-    <div className="section-intro"><div><p className="eyebrow">Petition overview</p><h1>Dashboard<span className="title-dot">.</span></h1><p>Confirmed support for more blues at Blågårds Apotek.</p></div><a className="pill-button" href="/admin/responses">View responses <span aria-hidden="true">↗</span></a></div>
+    <div className="section-intro"><h1>Dashboard<span className="title-dot">.</span></h1></div>
     <div className="metric-grid">
-      <article className="metric-card primary"><span>Confirmed responses</span><strong>{Number(summary.total).toLocaleString('da-DK')}</strong><small>People who completed email confirmation</small></article>
-      <article className="metric-card"><span>Last 7 days</span><strong>{Number(summary.recent).toLocaleString('da-DK')}</strong><small>New confirmed responses</small></article>
-      <article className="metric-card"><span>Blues email opt-ins</span><strong>{Number(summary.optins).toLocaleString('da-DK')}</strong><small>Active, confirmed permission</small></article>
+      <article className="metric-card primary"><span>Confirmed responses</span><strong>{Number(summary.total).toLocaleString('da-DK')}</strong></article>
+      <article className="metric-card"><span>Last 7 days</span><strong>{Number(summary.recent).toLocaleString('da-DK')}</strong></article>
+      <article className="metric-card"><span>Blues email opt-ins</span><strong>{Number(summary.optins).toLocaleString('da-DK')}</strong></article>
     </div>
     <div className="insight-grid">
-      <section className="insight-card"><div className="card-heading"><div><p className="eyebrow">Geography</p><h2>Where support comes from</h2></div><span>Top postcodes</span></div>
+      <section className="insight-card"><div className="card-heading"><h2>Where support comes from</h2><span>Top postcodes</span></div>
         {cities.length ? <div className="bar-list">{cities.map(row => <div className="bar-row" key={row.postal_code}><div className="bar-label"><strong>{row.city}</strong><small>{row.postal_code}</small></div><div className="bar-track"><i style={{ width: `${Number(row.count) / maxCity * 100}%` }}/></div><b>{row.count}</b></div>)}</div> : <p className="empty-note">Locations appear after the first confirmation.</p>}
-        <p className="card-footnote">City names come from Denmark’s address data; the postcode remains visible for clarity.</p>
       </section>
-      <section className="insight-card"><div className="card-heading"><div><p className="eyebrow">Age overview</p><h2>Age of supporters</h2></div><span>{summary.ages} with age data</span></div>
+      <section className="insight-card"><div className="card-heading"><h2>Age of supporters</h2><span>{summary.ages} with age data</span></div>
         {Number(summary.ages) ? <div className="bar-list">{bands.map(row => <div className="bar-row" key={row.name}><div className="bar-label"><strong>{row.name}</strong></div><div className="bar-track"><i style={{ width: `${row.count / maxAge * 100}%` }}/></div><b>{row.count}</b></div>)}</div> : <p className="empty-note">Age ranges appear when supporters choose to provide them.</p>}
-        <p className="card-footnote">Age range is optional. {Number(summary.total) - Number(summary.ages)} confirmed responses have no age information. Existing birth dates are grouped by age.</p>
       </section>
     </div>
-    <section className="status-panel"><div><p className="eyebrow">Registration status</p><h2>{c.ready ? 'Ready to collect responses' : 'Registration is closed'}</h2><p>{c.ready ? 'Run a real email confirmation test before sharing the link.' : `${missing.length} setup item${missing.length === 1 ? '' : 's'} still need attention.`}</p></div><div className="check-grid">{checks.map(([name, ok]) => <span className={ok ? 'check-item done' : 'check-item'} key={name}>{ok ? '✓' : '○'} {name}</span>)}</div><a href="/admin/settings">Open settings →</a></section>
   </div></main>;
 }

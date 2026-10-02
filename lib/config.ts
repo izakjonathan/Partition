@@ -1,7 +1,7 @@
-import { mailReady } from './mail';
+import { mailReady } from './firebase-verification';
 import { petitionSettings } from './settings';
 
-export const privacyVersion = '2026-10-02';
+export const privacyVersion = '2026-10-02-firebase';
 
 export async function config() {
   const settings = await petitionSettings();

@@ -42,6 +42,7 @@ async function install() {
     await sql`ALTER TABLE interests ADD COLUMN IF NOT EXISTS marketing_consent_text text`;
     await sql`ALTER TABLE interests ADD COLUMN IF NOT EXISTS marketing_withdrawn_at timestamptz`;
     await sql`ALTER TABLE interests ADD COLUMN IF NOT EXISTS age_band text`;
+    await sql`ALTER TABLE interests ADD COLUMN IF NOT EXISTS firebase_account_pending boolean NOT NULL DEFAULT false`;
     await sql`INSERT INTO petition_settings (id, title, statement, revision, draft, manager_email)
       VALUES (1, 'Flere blues-koncerter på Blågårds Apotek', '', 0, ${draftStatement}, 'izakhyllested@icloud.com')
       ON CONFLICT (id) DO NOTHING`;

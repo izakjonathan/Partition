@@ -2,3 +2,38 @@
 @media(max-width:800px){.petition-panel,.signup-panel,.insight-grid,.status-panel{grid-template-columns:1fr}.petition-panel{gap:1rem}.metric-grid{gap:.4rem}.metric-card{min-height:9rem}.status-panel>a{justify-self:start}.section-intro{align-items:start;flex-direction:column}.studio-fields{grid-template-columns:1fr}.bar-row{grid-template-columns:minmax(6.5rem,9rem) 1fr 1.5rem}}
 @media(max-width:600px){.public-header,.public-footer{padding:1rem}.public-footer{align-items:start;flex-direction:column}.petition-hero{padding:3rem 0}.petition-hero .eyebrow{margin:2rem 0 .7rem}.signup-panel{padding:1.2rem}.manager-header{align-items:start;flex-direction:column;padding:.75rem 1rem}.manager-nav{width:100%;justify-content:space-between;gap:.1rem}.manager-nav a{font-size:.67rem}.manager-main{padding:1.5rem 1rem 5rem}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.metric-card:first-child{grid-column:span 2}.metric-card{min-height:8rem}.status-panel{gap:1rem}.check-grid{grid-template-columns:1fr 1fr}.settings-overlay{padding:.6rem}.settings-window-head,.setting-block{padding:1.1rem}.setting-block>.form,.setting-block>.studio-form,.setting-block>.check-grid,.setting-block>.hint{margin-left:0}.setting-footer{padding:1.2rem}.responses-toolbar{align-items:start;flex-direction:column}.bar-label strong{font-size:.73rem}}
 .form select{width:100%;min-width:0;border:1px solid var(--line);border-radius:.68rem;background:var(--canvas);color:var(--ink);padding:.72rem .8rem}
+
+/* Compact manager layout and controls */
+:root{--muted:var(--ink);--line:var(--ink)}
+input::placeholder,textarea::placeholder{color:var(--ink);opacity:1}
+.manager-main{padding-top:clamp(1.15rem,2vw,2rem)}
+.section-intro{margin-bottom:1.1rem}
+.section-intro h1{font-size:clamp(2.7rem,8vw,4.6rem);margin:0}
+.metric-card{min-height:8rem;gap:1rem}
+.metric-card strong{font-size:clamp(2.3rem,5vw,3.6rem)}
+.metric-card small{opacity:1}
+.insight-card{min-height:0}
+.card-heading{align-items:start;margin-bottom:.85rem}
+.card-heading h2{font-size:clamp(1.3rem,3vw,1.65rem);margin:0;max-width:22ch}
+.card-heading>span{flex:none}
+.empty-note{padding:.85rem 1rem}
+.list-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem;margin-bottom:.8rem}
+.list-actions .pill-button{min-width:0;white-space:normal;text-align:center;line-height:1.15;padding:.65rem .75rem}
+.responses-toolbar{min-height:4.4rem;padding:.9rem 1rem;flex-wrap:wrap}
+.responses-toolbar h2{display:flex;align-items:center;gap:.5rem;font-size:1.25rem;margin:0}
+.response-count{display:inline-grid;place-items:center;min-width:1.55rem;height:1.55rem;padding:0 .3rem;border:1px solid var(--ink);border-radius:99px;font-size:.72rem;letter-spacing:0}
+.responses-toolbar .pill-button{padding:.55rem .8rem}
+.responses-toolbar .pill-button:disabled{opacity:1;background:transparent;color:var(--ink)}
+.response-table th{padding:.7rem .65rem}
+.response-table th>span{margin-bottom:.4rem}
+.column-filter{min-width:6.7rem;text-transform:none;letter-spacing:0}
+.column-filter summary{display:flex;align-items:center;justify-content:space-between;gap:.35rem;list-style:none;cursor:pointer;border:1px solid var(--ink);border-radius:99px;background:var(--canvas);color:var(--ink);padding:.35rem .55rem;font-size:.68rem;font-weight:800}
+.column-filter summary::-webkit-details-marker{display:none}
+.column-filter summary span{font-size:.85rem;line-height:1}
+.column-filter summary i{margin-left:auto;font-style:normal}
+.filter-fields{display:grid;gap:.35rem;padding:.5rem 0 .15rem}
+.filter-fields input{width:100%;min-width:0;border:1px solid var(--ink);border-radius:.4rem;background:var(--canvas);color:var(--ink);padding:.4rem .5rem;font-size:.7rem}
+.sort-buttons{display:flex;gap:.25rem}
+.sort-buttons button,.sort-buttons button:not(.secondary):not(.outline-button):not(.close-circle):not(.pager button){flex:1;min-width:0;padding:.34rem .25rem;border:1px solid var(--ink);border-radius:99px;background:var(--canvas);color:var(--ink);font-size:.66rem;font-weight:800;letter-spacing:0;white-space:nowrap}
+.sort-buttons button[aria-pressed=true],.sort-buttons button[aria-pressed=true]:not(.secondary):not(.outline-button):not(.close-circle):not(.pager button){background:var(--ink);color:var(--canvas)}
+@media(max-width:600px){.manager-main{padding-top:1.15rem}.metric-card{min-height:6.5rem;padding:.9rem}.metric-card strong{font-size:2.25rem}.insight-card{padding:1rem}.card-heading{gap:.5rem}.card-heading>span{font-size:.56rem;white-space:normal;text-align:center}.list-actions .pill-button{font-size:.63rem}.responses-toolbar{align-items:center;flex-direction:row}.responses-toolbar h2{font-size:1.12rem}.responses-toolbar .pill-button{font-size:.66rem}}
