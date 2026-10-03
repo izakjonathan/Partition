@@ -9,6 +9,7 @@ Extract this ZIP and commit its contents at the repository root, with `package.j
 The manager email starts at `izakhyllested@icloud.com`. Settings can change it after confirming the current password. The change signs out current sessions; sign in with the new email and the same `ADMIN_PASSWORD`. An email typo could lock you out, so enter the address twice and check it carefully. This is an application login, not a change to the Vercel account.
 
 To change the confirmation email, open `/admin/settings` → **Confirmation email**. Edit the subject and message, keep `{{confirmation_link}}` in the message, and save. New sign-ups use the saved text; links already emailed stay as sent. The link still expires after 24 hours. No Vercel environment variable is needed for the wording.
+Use `{{participant_name}}` in the subject or message to insert the name entered in the form, for example `Hej {{participant_name}},`. The link placeholder remains required in the message.
 
 The Baros-inspired manager has a dashboard with confirmed totals, postcode-to-city breakdown and age ranges. `/admin/responses` has a filter on every column and one active A–Z/Z–A sort at a time. The copy action takes **all currently confirmed, active blues-email opt-ins**, regardless of table filters; the export also supplies unsubscribe links. Settings contains the statement editor, login email and UI Studio. UI Studio colors are stored in Neon and applied to the public site and manager.
 

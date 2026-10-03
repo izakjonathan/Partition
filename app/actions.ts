@@ -51,7 +51,7 @@ export async function registerInterest(_previous: FormState, form: FormData): Pr
     const confirmUrl = `${c.site.replace(/\/$/, '')}/confirm?token=${token}`;
     let messageId: string | undefined;
     try {
-      messageId = await sendConfirmation(email, confirmUrl, c.confirmationSubject, c.confirmationBody);
+      messageId = await sendConfirmation(email, confirmUrl, name, c.confirmationSubject, c.confirmationBody);
       await sql`UPDATE interests SET confirmation_message_id = ${messageId} WHERE id = ${id}`;
     } catch {
       if (messageId) try { await deleteConfirmationMessage(messageId); } catch {}

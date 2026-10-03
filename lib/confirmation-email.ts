@@ -8,21 +8,25 @@ function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!);
 }
 
-export async function sendConfirmation(email: string, confirmUrl: string, subject: string, body: string) {
+export async function sendConfirmation(email: string, confirmUrl: string, participantName: string, subject: string, body: string) {
   const key = process.env.AGENTMAIL_API_KEY?.trim();
   const inbox = process.env.AGENTMAIL_INBOX_ID?.trim();
   if (!key || !inbox) throw new Error('Confirmation email is not configured');
   if (!subject || !body.includes('{{confirmation_link}}')) throw new Error('Confirmation email text is missing');
-  const text = body.replaceAll('{{confirmation_link}}', confirmUrl);
-  const html = body.split('{{confirmation_link}}').map(part => escapeHtml(part).replace(/\r?\n/g, '<br>'))
-    .join(`<a href="${escapeHtml(confirmUrl)}">${escapeHtml(confirmUrl)}</a>`);
+  const renderedSubject = subject.replaceAll('{{participant_name}}', participantName);
+  const text = body.replaceAll('{{participant_name}}', participantName).replaceAll('{{confirmation_link}}', confirmUrl);
+  const html = body.split(/(\{\{confirmation_link\}\}|\{\{participant_name\}\})/g).map(part => {
+    if (part === '{{confirmation_link}}') return `<a href="${escapeHtml(confirmUrl)}">${escapeHtml(confirmUrl)}</a>`;
+    if (part === '{{participant_name}}') return escapeHtml(participantName);
+    return escapeHtml(part).replace(/\r?\n/g, '<br>');
+  }).join('');
 
   const response = await fetch(`https://api.agentmail.to/v0/inboxes/${encodeURIComponent(inbox)}/messages/send`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       to: email,
-      subject,
+      subject: renderedSubject,
       text,
       html: `<div>${html}</div>`,
     }),
